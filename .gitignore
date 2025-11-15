@@ -1,0 +1,9 @@
+.vscode
+.venv
+output/
+*.egg-info
+*.pyc
+build/
+dist/
+.env
+demo_data/
