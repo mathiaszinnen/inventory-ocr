@@ -45,7 +45,7 @@ def pipeline(input_dir, output_dir, layout_config, detector: Detector, recognize
     postprocessor.postprocess(results_csv_raw, final_csv_output)
 
 
-def instantiate_recognizer(engine, layout_config, app_dir, pagexml_path):
+def instantiate_recognizer(engine, layout_config, app_dir):
     if engine == 'pero':
         print("Using PeroCardRecognizer, ensure you have 'pero-ocr' installed.")
         return PeroCardRecognizer(layout_config=layout_config, app_dir=app_dir)
@@ -62,8 +62,6 @@ def instantiate_recognizer(engine, layout_config, app_dir, pagexml_path):
     elif engine == 'dummy':
         # Dummy recognizer for rapid development
         return DummyCardRecognizer(layout_config=layout_config)
-    elif engine == 'pagexml':
-        return PageXMLRecognizer(layout_config=layout_config, pagexml_path=pagexml_path)
     else: # automatic selection based on platform
         if platform.system() == 'Darwin':
             print("Using MacOSCardRecognizer, ensure you are running this on a Mac with 'ocrmac' installed.")
@@ -115,16 +113,10 @@ def main():
     parser.add_argument(
         '--ocr_engine',
         type=str,
-        choices=['auto','ocrmac', 'pero', 'dummy','mistral','pagexml'],
+        choices=['auto','ocrmac', 'pero', 'dummy','mistral'],
         default='auto',
-        help="Recognition engine to use: 'ocrmac', 'pero', 'dummy', or 'pagexml'. Default is 'auto', " \
+        help="Recognition engine to use: 'ocrmac', 'pero', or 'dummy'. Default is 'auto', " \
         "which resolves to ocrmac when running on a mac system and pero else."
-    )
-    parser.add_argument(
-        '--pagexml_dir',
-        type=str,
-        required=False,
-        help="Path to a directory containing externally generated PageXML files. Required if --ocr_engine is 'pagexml'."
     )
     parser.add_argument(
         '--no_detect',
@@ -138,10 +130,8 @@ def main():
         required=False
     )
     args = parser.parse_args()
-    if args.ocr_engine == 'pagexml' and not args.pagexml_dir:
-        raise ValueError("When --ocr_engine is 'pagexml', you must specify --pagexml_dir.")
     app_dir = appdirs.user_data_dir("inventory_ocr")
-    recognizer = instantiate_recognizer(args.ocr_engine, args.layout_config, app_dir, args.pagexml_dir)
+    recognizer = instantiate_recognizer(args.ocr_engine, args.layout_config, app_dir)
     detector = instantiate_detector(args.no_detect, app_dir)
     postprocessor = instantiate_postprocessor(args.postprocessor)
 

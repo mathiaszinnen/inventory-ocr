@@ -265,7 +265,6 @@ class MistralOCRRecognizer(CardRecognizer):
         output_dict = {}
         for region_name in self.layout_dict.keys():
             output_dict[region_name] = (str, ...)#, description=f'The inventory field called {region_name}, specified in {region_name}')
-        output_dict['Gewicht'] = (str, ...)  # Dirty hack to enable separate weight extraction for Mistral TODO: find more generic solution
         output_format_model = create_model(
             'OutputFormat',
             **output_dict
@@ -300,18 +299,3 @@ class MistralOCRRecognizer(CardRecognizer):
             document_annotation_format=self._output_format
         )
         return ocr_response
-
-class PageXMLRecognizer(CardRecognizer):
-    """Recognizer to read XML results exported with other tools (e.g. ScribbleSense)"""
-    def __init__(self, layout_config, pagexml_path):
-        self.pagexml_dir = pagexml_path
-        self.pagexml_files = os.listdir(pagexml_path)
-
-    def _do_ocr(self, image):
-        image_fn = image.filename
-        pagexml_fn = os.path.splitext(image_fn)[0] + '.xml'
-        if pagexml_fn not in self.pagexml_files:
-            raise RuntimeError(f"No pagexml file found for {image_fn}.")
-        pagexml = os.path.join(self.pagexml_dir)
-        root = ET.parse(pagexml)
-        print('debug')
