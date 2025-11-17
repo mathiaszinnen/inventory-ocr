@@ -215,6 +215,7 @@ class PeroCardRecognizer(CardRecognizer):
         """Download and prepare the resources needed for Pero OCR."""
         if os.path.exists(resources_path):
             print(f"Using existing pero ocr resources at {resources_path}")
+            # TODO: check if it has been downloaded correctly and all required files are available
             return
         print(f"Downloading pero ocr resources to {resources_path}")
         url = "https://nextcloud.fit.vutbr.cz/s/NtAbHTNkZFpapdJ/download/pero_eu_cz_print_newspapers_2022-09-26.zip"
