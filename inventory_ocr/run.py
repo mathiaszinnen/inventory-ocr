@@ -4,6 +4,8 @@ import sys
 from inventory_ocr.detection import Detector, YoloImageDetector, DummyDetector
 from inventory_ocr.recognition import CardRecognizer, DummyCardRecognizer, MacOSCardRecognizer, PeroCardRecognizer, MistralOCRRecognizer
 from inventory_ocr.postprocessor import PostProcessor, SchmuckPostProcessor, BenchmarkingPostProcessor
+from inventory_ocr.utils import has_regions_defined
+from multiprocessing import Process
 import platform
 import appdirs
 from PIL import Image
@@ -137,11 +139,15 @@ def main():
     )
     args = parser.parse_args()
 
-    if args.annotate:
-        from inventory_ocr.annotate import annotation_app
-        annotation_app.launch(inbrowser=True)
-        # webbrowser.open("http://localhost:7860")
-        return
+    def _serve_gradio(input_dir, layout_config_path):
+        from inventory_ocr.annotate import create_annotation_app
+        app = create_annotation_app(input_dir, layout_config_path)
+        app.launch(inbrowser=True)
+
+    if args.annotate or not has_regions_defined(args.layout_config):
+        p = Process(target=_serve_gradio, args=(args.input_dir, args.layout_config))
+        p.start()
+        p.join()
 
     app_dir = appdirs.user_data_dir("inventory_ocr")
     recognizer = instantiate_recognizer(args.ocr_engine, args.layout_config, app_dir)

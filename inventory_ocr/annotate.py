@@ -1,47 +1,53 @@
 import gradio as gr
 from gradio_image_annotation import image_annotator
+import os
 import yaml
 
-def set_filepath(path, state):
-    return state + [path]
+def create_annotation_app(input_dir, layout_file_path):
+    """
+    Returns a gr.Blocks app to annotate the layout. 
+    TODOS: Display a nice success message and close the browser window before killing the app serving process. But gradio conditional rendering is a pain in the...
+    """
+    print("Loading template image for region annotation...")
+    img_files = [f for f in os.listdir(input_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+    assert img_files, "No image files found in the input directory."
+    template_image_path = os.path.join(input_dir, img_files[0])
 
-def extract_layout(annotations, layout_state):
-    (h,w,c) = annotations['image'].shape
+    def set_layout(layout, state):
+        return state + [layout]
 
-    layout = []
-    for box in annotations['boxes']:
-        layout.append({
-            'label': box['label'],
-            'x': box['xmin'] / w,
-            'y': box['ymin'] / h,
-            'xmax': box['xmax'] / w,
-            'ymax': box['ymax'] / h   
-        })
-    layout_file = 'layout.yaml' 
-    with open(layout_file, 'w') as f:
-        yaml.dump({'regions': layout}, f)
-    return gr.Markdown("Layout Downloaded Succesfully"), layout_state
+    def extract_layout(annotations, layout_state):
+        (h, w, c) = annotations['image'].shape
 
+        regions = {}
+        for box in annotations['boxes']:
+            xmin = int(box['xmin']) / w
+            xmax = int(box['xmax']) / w
+            ymin = int(box['ymin']) / h
+            ymax = int(box['ymax']) / h
+            label = box['label']
+            regions[label] = [xmin, ymin, xmax, ymax]
+        print(f"Saving layout configuration to {layout_file_path}...")
+        with open(layout_file_path, 'w') as f:
+            yaml.dump({'regions': regions}, f, default_flow_style=False)
+        os._exit(0) 
+        return gr.Markdown("Layout succesfully defined. You may now close this window."), regions
 
-with gr.Blocks() as annotation_app:
-    gr.Markdown("# Layout Annotation Tool")
-    
-    image_file = gr.State([])
-    layout = gr.State(None)
+    with gr.Blocks() as annotation_app:
+        gr.Markdown("# Layout Annotation Tool")
 
-    @gr.render(inputs=image_file)
-    def show_image(paths):
-        if len(paths) == 0:
-            upload_button = gr.UploadButton("Upload Image", file_types=["image"])
-            upload_button.upload(set_filepath, inputs=[upload_button, image_file], outputs=image_file)
-            gr.Markdown("Please upload an image to annotate.")
-        else:
-            gr.Markdown("### Annotate the Image")
+        layout_state = gr.State([])
 
-            annotations = image_annotator({"image": paths[0], "boxes": []}, 
-                                          label_list=["Field Name"],
-                                          label_colors=[(0,255,0)],
-                                          boxes_alpha=0.4)
+        gr.Markdown("### Annotate the Image")
+
+        @gr.render(inputs=layout_state)
+        def show_annotation_interface(layout):
+            annotations = image_annotator({"image": template_image_path, "boxes": []},
+                                            label_list=["Field Name"],
+                                            label_colors=[(0, 255, 0)],
+                                            boxes_alpha=0.4)
             extract_layout_button = gr.Button("Extract Layout")
-            download_hidden = gr.Markdown(visible=False, elem_id="download_hidden")
-            extract_layout_button.click(extract_layout, inputs=[annotations, layout], outputs=[download_hidden, layout])
+            close_message =  gr.Markdown("", visible=False)
+            extract_layout_button.click(extract_layout, inputs=[annotations, layout_state], outputs=[close_message, layout_state])
+
+    return annotation_app

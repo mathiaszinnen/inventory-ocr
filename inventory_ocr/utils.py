@@ -36,3 +36,15 @@ def pil_image_to_base64(image: Image.Image) -> str:
     image.save(buffered, format="PNG")
     img_bytes = buffered.getvalue()
     return base64.b64encode(img_bytes).decode("utf-8")
+
+def has_regions_defined(layout_config_path: str) -> bool:
+    if not os.path.exists(layout_config_path):
+        return False
+    import yaml
+    try:
+        with open(layout_config_path, 'r') as f:
+            config = yaml.safe_load(f)
+            return 'regions' in config and bool(config['regions'])
+    except Exception:
+        print('Layout file exists but could not be read properly.')
+        return False
