@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 from inventory_ocr.detection import Detector, YoloImageDetector, DummyDetector
-from inventory_ocr.recognition import CardRecognizer, DummyCardRecognizer, MacOSCardRecognizer, PeroCardRecognizer, MistralOCRRecognizer, PageXMLRecognizer
+from inventory_ocr.recognition import CardRecognizer, DummyCardRecognizer, MacOSCardRecognizer, PeroCardRecognizer, MistralOCRRecognizer
 from inventory_ocr.postprocessor import PostProcessor, SchmuckPostProcessor, BenchmarkingPostProcessor
 import platform
 import appdirs
@@ -10,6 +10,7 @@ from PIL import Image
 import yaml
 import csv
 from tqdm import tqdm
+import webbrowser
 
 def pipeline(input_dir, output_dir, layout_config, detector: Detector, recognizer: CardRecognizer, postprocessor: PostProcessor):
     print(f"Processing files in directory: {input_dir}")
@@ -129,7 +130,19 @@ def main():
         choices=['schmuck','benchmark'],
         required=False
     )
+    parser.add_argument(
+        '--annotate',
+        help="Launch the layout annotation tool instead of running the OCR pipeline.",
+        action='store_true'
+    )
     args = parser.parse_args()
+
+    if args.annotate:
+        from inventory_ocr.annotate import annotation_app
+        annotation_app.launch(inbrowser=True)
+        # webbrowser.open("http://localhost:7860")
+        return
+
     app_dir = appdirs.user_data_dir("inventory_ocr")
     recognizer = instantiate_recognizer(args.ocr_engine, args.layout_config, app_dir)
     detector = instantiate_detector(args.no_detect, app_dir)

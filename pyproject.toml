@@ -19,7 +19,9 @@ dependencies = [
     "ultralytics",
     "appdirs",
     "tqdm",
-    "Levenshtein"
+    "Levenshtein",
+    "gradio",
+    "gradio_image_annotation"
 ]
 
 [project.optional-dependencies]
