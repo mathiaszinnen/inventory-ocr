@@ -17,6 +17,7 @@ classifiers = [
 dependencies = [
     "ultralytics",
     "appdirs",
+    "ocrmac; platform_system == 'Darwin'",
     "tqdm",
     "Levenshtein",
     "gradio",
