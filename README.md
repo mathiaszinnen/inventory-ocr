@@ -10,7 +10,11 @@ Specifically, to adapt this for your own data:
 
 Set up your environment using your favourite environment management tool. We recommend [venv](https://docs.python.org/3/library/venv.html). 
 
-Install using `pip install inventory-ocr`
+### MacOS
+Installation using `pip install inventory-ocr` will enable the usage of the apple vision API for ocr. 
+### Linux/Windows
+Install using `pip install inventory-ocr[pero]` or `pip install inventory-ocr[mistral]` depending on the OCR backend you want to use. 
+
 
 ## Usage
 
