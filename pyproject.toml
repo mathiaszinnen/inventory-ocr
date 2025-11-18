@@ -4,9 +4,8 @@ name = "inventory-ocr"
 authors = [
     { name = "Mathias Zinnen", email = "mathias.zinnen@gmail.com" }
 ]
-
 description = "Read inventory cards, extract images, and create structured data."
-readme = "README.MD"
+readme = "README.md"
 requires-python= ">=3.8"
 
 classifiers = [
@@ -42,3 +41,6 @@ inventory_ocr = ["config/*.yaml","resources/example_output.json"]
 
 [project.scripts]
 inventory-ocr = "inventory_ocr.run:main"
+
+[project.urls]
+Homepage = "https://github.com/mathiaszinnen/inventory-ocr"
