@@ -1,0 +1,41 @@
+name: Build Windows executable on "bump" commits
+
+on:
+  push:
+
+jobs:
+  build-windows-exe:
+    name: Build Windows EXE
+    runs-on: windows-latest
+    # run only when the head commit message contains "bump"
+    if: contains(github.event.head_commit.message, 'bump')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install build tools
+        run: |
+          pip install pyinstaller
+          # install the package and its dependencies (will respect platform markers)
+          pip install -e .
+
+      - name: Build single-file executable with PyInstaller
+        run: |
+          # adjust entry path if your CLI entrypoint file is in a different location
+          pyinstaller --onefile --name inventory-ocr inventory_ocr/run.py
+          dir dist
+
+      - name: Upload artifact (Windows EXE)
+        uses: actions/upload-artifact@v4
+        with:
+          name: inventory-ocr-windows-exe
+          path: dist/inventory
