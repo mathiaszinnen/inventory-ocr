@@ -1,6 +1,6 @@
 [project]
 name = "inventory-ocr"
-    version = "0.0.2"
+    version = "0.0.2
 authors = [
     { name = "Mathias Zinnen", email = "mathias.zinnen@gmail.com" }
 ]
@@ -18,6 +18,8 @@ dependencies = [
     "ultralytics",
     "appdirs",
     "ocrmac; platform_system == 'Darwin'",
+    "pero-ocr; platform_system == 'win32' or platform_system == 'linux'",
+    "configparser"
     "tqdm",
     "Levenshtein",
     "gradio",
