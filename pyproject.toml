@@ -1,6 +1,6 @@
 [project]
 name = "inventory-ocr"
-    version = "0.0.2
+    version = "0.0.3
 authors = [
     { name = "Mathias Zinnen", email = "mathias.zinnen@gmail.com" }
 ]
