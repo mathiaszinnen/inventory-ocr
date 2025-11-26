@@ -12,7 +12,12 @@ from PIL import Image
 import yaml
 import csv
 from tqdm import tqdm
-import webbrowser
+
+# moved to module level so multiprocessing with "spawn" can import it
+def _serve_gradio(input_dir, layout_config_path):
+    from inventory_ocr.annotate import create_annotation_app
+    app = create_annotation_app(input_dir, layout_config_path)
+    app.launch(inbrowser=True)
 
 def pipeline(input_dir, output_dir, layout_config, detector: Detector, recognizer: CardRecognizer, postprocessor: PostProcessor):
     print(f"Processing files in directory: {input_dir}")
@@ -139,11 +144,7 @@ def main():
     )
     args = parser.parse_args()
 
-    def _serve_gradio(input_dir, layout_config_path):
-        from inventory_ocr.annotate import create_annotation_app
-        app = create_annotation_app(input_dir, layout_config_path)
-        app.launch(inbrowser=True)
-
+    # use module-level _serve_gradio (required for multiprocessing spawn)
     if args.annotate or not has_regions_defined(args.layout_config):
         p = Process(target=_serve_gradio, args=(args.input_dir, args.layout_config))
         p.start()
@@ -157,13 +158,15 @@ def main():
     input_dir = args.input_dir
     output_dir = args.output_dir
 
-    pipeline(input_dir, output_dir, args.layout_config, detector, recognizer, postprocessor)
+    pipeline(input_dir, output_dir, args.layout_config, detector, recognizer, postprocessor)layout_config, detector, recognizer, postprocessor)
 
     # Check if the input directory exists
-    if not os.path.isdir(input_dir):
-        print(f"Error: The directory '{input_dir}' does not exist.", file=sys.stderr)
-        sys.exit(1)
+    if not os.path.isdir(input_dir):isdir(input_dir):
+        print(f"Error: The directory '{input_dir}' does not exist.", file=sys.stderr)        print(f"Error: The directory '{input_dir}' does not exist.", file=sys.stderr)
+        sys.exit(1)        sys.exit(1)
 
 
-if __name__ == "__main__":
+
+
+    main()if __name__ == "__main__":if __name__ == "__main__":
     main()
