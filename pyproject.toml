@@ -19,7 +19,7 @@ dependencies = [
     "appdirs",
     "ocrmac; platform_system == 'Darwin'",
     "pero-ocr; platform_system == 'win32' or platform_system == 'linux'",
-    "configparser"
+    "configparser",
     "tqdm",
     "Levenshtein",
     "gradio",
