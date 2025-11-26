@@ -18,7 +18,7 @@ dependencies = [
     "ultralytics",
     "appdirs",
     "ocrmac; platform_system == 'Darwin'",
-    "pero-ocr; platform_system == 'win32' or platform_system == 'linux'",
+    "pero-ocr; sys_platform == 'win32' or sys_platform == 'linux'",
     "configparser",
     "tqdm",
     "Levenshtein",

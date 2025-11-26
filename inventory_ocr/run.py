@@ -158,15 +158,13 @@ def main():
     input_dir = args.input_dir
     output_dir = args.output_dir
 
-    pipeline(input_dir, output_dir, args.layout_config, detector, recognizer, postprocessor)layout_config, detector, recognizer, postprocessor)
+    pipeline(input_dir, output_dir, args.layout_config, detector, recognizer, postprocessor)
 
     # Check if the input directory exists
-    if not os.path.isdir(input_dir):isdir(input_dir):
-        print(f"Error: The directory '{input_dir}' does not exist.", file=sys.stderr)        print(f"Error: The directory '{input_dir}' does not exist.", file=sys.stderr)
-        sys.exit(1)        sys.exit(1)
+    if not os.path.isdir(input_dir):
+        print(f"Error: The directory '{input_dir}' does not exist.", file=sys.stderr)        
+        sys.exit(1)
 
 
-
-
-    main()if __name__ == "__main__":if __name__ == "__main__":
+if __name__ == "__main__":
     main()
