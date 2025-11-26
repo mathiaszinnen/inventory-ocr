@@ -26,7 +26,7 @@ jobs:
         run: |
           pip install pyinstaller
           # install the package and its dependencies (will respect platform markers)
-          pip install -e .
+          pip install .
 
       - name: Build single-file executable with PyInstaller
         run: |
